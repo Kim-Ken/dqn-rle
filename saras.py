@@ -22,29 +22,26 @@ def digitize_state(observation):
 
 
 def get_action(next_state,episode):
-
-    epsilon = 0.99*(1/(episode/10 +1 ))
-    if epsilon <=np.random.uniform(0,1):
+    epsilon = 0.5 * (1 / (episode + 1))
+    if epsilon < np.random.uniform(0,1):
         next_action = np.argmax(q_table[next_state])
     else:
         next_action = np.random.choice([0,1,2])
     return next_action
 
 
-def update_Qtable(q_table,state,action,reward,next_state):
+def update_Qtable_sarsa(q_table,state,action,reward,next_state,next_action):
     gamma = 0.99
-    alpha = 0.17
-    next_Max_Q=max(q_table[next_state][0],q_table[next_state][1])
+    alpha = 0.5
     q_table[state,action] = (1-alpha) * q_table[state,action]+\
-        alpha * (reward+gamma*next_Max_Q)
-
+        alpha * (reward + gamma*q_table[next_state,next_action])
     return q_table
 
 env = gym.make('MountainCar-v0')
 max_number_of_steps = 200
 num_consecutive_iterations = 100
 num_episodes = 5000
-goal_average_reward = -170
+goal_average_reward = -160
 num_dizitized = 20
 q_table = np.random.uniform(
     low=-1,high=1,size =(num_dizitized**2,env.action_space.n)
@@ -65,7 +62,6 @@ for episode in range(num_episodes):
 
     for t in range(max_number_of_steps):
         if islearned == 1:
-
             env.render()
             time.sleep(0.05)
             print(observation[0])
@@ -86,12 +82,15 @@ for episode in range(num_episodes):
 
                 episode_reward -= 100
 
+
         next_state = digitize_state(observation)
-        q_table = update_Qtable(q_table,state,action,reward,next_state)
 
-        action= get_action(next_state,episode)
+        next_action = get_action(next_state,episode)
+        q_table = update_Qtable_sarsa(q_table,state,action,reward,next_state,next_action)
 
-        state= next_state
+        action= next_action
+        state = next_state
+
 
         if done:
             print('%d Episode finished after %f time steps / mean %f' %

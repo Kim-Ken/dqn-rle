@@ -86,9 +86,9 @@ DQN_MODE = 0
 LENDER_MODE=1
 
 env = gym.make('Acrobot-v1')
-num_episodes = 399
-max_number_of_steps = 200
-goal_average_reward = -100
+num_episodes = 1000
+max_number_of_steps =200
+goal_average_reward = -80
 num_consecutive_iterations = 10
 total_reward_vec = np.full(num_consecutive_iterations,-200)
 gamma = 0.99
@@ -97,8 +97,8 @@ isrender = 0
 action_num = 3
 obs_num = 6
 
-hidden_size = 16
-learning_rate = 0.001
+hidden_size = 20
+learning_rate = 0.0015
 memory_size = 10000
 batch_size = 32
 
